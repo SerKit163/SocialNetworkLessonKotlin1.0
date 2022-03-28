@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class Post(
     val id: Int = 0, // id Поста
+    val ownerId: Int = 0, // id
     val fromId: Int = 0, // id Пользователя
     val text: String, // Тест поста
     val likes: Int = 0, // Количество лайков поста
