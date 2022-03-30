@@ -11,13 +11,10 @@ class WallServiceTest {
     fun add() {
         val service = WallService
 
-        val result = service.add(Post(text = "Пост1"))
+        val result = service.add(Post(id = 7, text = "Пост7"))
 
-        assertEquals(result, id=1, text = "Пост1")
+        assertEquals(result.id, 7)
     }
-
-    private fun assertEquals(result: Post, id: Int, text: String) {}
-
 
 
     @Test
