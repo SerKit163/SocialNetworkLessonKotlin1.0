@@ -1,16 +1,32 @@
 package ru.netology
 
+import ru.netology.objects.*
 import java.time.LocalDateTime
 
 data class Post(
-    val id: Int = 0, // id Поста
-    val ownerId: Int = 0, // id
-    val fromId: Int = 0, // id Пользователя
-    val text: String, // Тест поста
-    val likes: Int = 0, // Количество лайков поста
-    val views: Int = 0, // Количество просмотра поста
-    val friendsOnly: Boolean = false, // Видно только друзьям
-    val date: LocalDateTime = LocalDateTime.now(), // Дата поста
-
+    val id: Int = 0,
+    val ownerId: Int = 0,
+    val fromId: Int = 0,
+    val createdBy: Int = 0,
+    val text: String? = null,
+    val date: LocalDateTime = LocalDateTime.now(),
+    val replyOwnerId: Int = 0,
+    val replyPostIf: Int = 0,
+    val friendsOnly: Boolean = false,
+    val comments: Comment? = null,
+    val copyright: Copyright? = null,
+    val likes: Likes? = null,
+    val reposts: Repost? = null,
+    val views: Views? = null,
+    val postType: String? = null,
+    val signerId: Int = 0,
+    val canPin: Boolean = false,
+    val canDelete: Boolean = false,
+    val canEdit: Boolean = false,
+    val isPinned: Boolean = false,
+    val markedAsAds: Boolean = false,
+    val isFavorite: Boolean = false,
+    val donut: Donut? = null,
+    val postponedId: Int = 0
 )
 
