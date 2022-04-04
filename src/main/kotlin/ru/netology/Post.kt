@@ -1,6 +1,8 @@
 package ru.netology
 
 import ru.netology.objects.*
+import ru.netology.objects.attachments.Attachments
+import ru.netology.objects.geo.Geo
 import java.time.LocalDateTime
 
 data class Post(
@@ -19,7 +21,11 @@ data class Post(
     val reposts: Repost? = null,
     val views: Views? = null,
     val postType: String? = null,
+    val postSource: PostSource? = null,
+    val attachments: Array<Attachments>? = null,
+    val geo: Geo? = null,
     val signerId: Int = 0,
+//    val copyHistory: Array<Any>? = null,
     val canPin: Boolean = false,
     val canDelete: Boolean = false,
     val canEdit: Boolean = false,

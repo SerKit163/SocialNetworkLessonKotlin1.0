@@ -1,6 +1,5 @@
 package ru.netology.objects
 
-
 data class Comment(
     val count: Int = 0,
     val canPost: Boolean = true,
