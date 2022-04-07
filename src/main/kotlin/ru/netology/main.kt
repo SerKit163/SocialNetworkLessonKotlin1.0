@@ -1,13 +1,19 @@
 package ru.netology
 
+import ru.netology.objects.Likes
+import ru.netology.objects.Repost
+import ru.netology.objects.attachments.Attachment
+import ru.netology.objects.attachments.objects.video.Video
+import ru.netology.objects.attachments.objects.video.VideoAttachment
+
 
 fun main() {
 
     val post1 = Post(text = "Пост #1", ownerId = 1)
     val post2 = Post(text = "Пост #2", ownerId = 4)
     val post3 = Post(text = "Пост #3", ownerId = 2)
-    val post4 = Post(id = 7, text = "Пост #4", ownerId = 123) // Массив. Установить 7, но в будущем Автоматически уже не устанавливать 7
-    val post5 = Post(id = 2, text = "Пост #5", fromId = 10) // Не установит, так как 2 уже есть в массиве
+    val post4 = Post(id = 7, text = "Пост #4", ownerId = 123) // Новое введенное id не меняет предыдущие
+    val post5 = Post(text = "Пост #5", fromId = 10)
     val post6 = Post(text = "Пост #6", ownerId = 67)
 
     val upPost = Post(id = 5, text = "Редактированный Пост #2")
@@ -21,12 +27,27 @@ fun main() {
 
     WallService.update(upPost)
 
+    WallService.likePostId(2)
+
+    WallService.repostId(1)
+    WallService.repostId(1)
+    WallService.repostId(2)
+    WallService.repostId(3)
+
+    WallService.likePostId(1)
+    WallService.likePostId(2)
 
     println("----------------")
     for (i in WallService.posts) {
         println("FOR -> " + i)
     }
     println("----------------")
+
+
+    val attachmentVideo: Attachment = Attachment.VideoAttachment(Video(type = "stuff"))
+
+    println(attachmentVideo.type)
+
 }
 
 
@@ -45,14 +66,66 @@ object WallService {
 
         posts.forEach { p ->
             if (p.id == post.id) {
-                posts.set(p.id - 1, post.copy(
+                posts[p.id - 1] = post.copy(
                     text=post.text,
                     fromId = post.fromId,
                     likes = post.likes,
                     views = post.views,
                     friendsOnly = post.friendsOnly
-                ))
+                )
             return true
+            }
+        }
+        return false
+    }
+
+    fun likePostId(id: Int): Boolean {
+        posts.forEach { p ->
+            if (p.id == id) {
+                var countLike = p.likes?.count ?: 0
+                countLike++
+
+                val idPostOriginal = p.reposts?.idPostOriginal ?: 0
+
+                if (idPostOriginal > 0) {
+
+                    val original = posts[idPostOriginal - 1].likes?.count ?: 0
+
+                    val sumLikes = original + 1
+
+                    posts[idPostOriginal - 1] = posts[idPostOriginal - 1].copy(likes = Likes(count = sumLikes))
+                }
+                posts[p.id - 1] = p.copy(likes = Likes(count = countLike, userLikes = true))
+            return true
+            }
+        }
+        return false
+    }
+
+    fun repostId(id: Int): Boolean {
+        posts.forEach { p ->
+            if (p.id == id) {
+                var countRepost = p.reposts?.count ?: 0
+                countRepost++
+
+                val originalLike = posts[id - 1].likes?.count ?: 0
+
+                val sumLikes = originalLike + 1
+
+                val idPostOriginal = p.reposts?.idPostOriginal ?: 0
+                val userReposted = p.reposts?.userReposted ?: false
+
+                if (idPostOriginal > 0) {
+                    val original = posts[idPostOriginal - 1].likes?.count ?: 0
+                    val sumLikesRepost = original + 1
+                    posts[idPostOriginal - 1] = posts[idPostOriginal - 1].copy(likes = Likes(count = sumLikesRepost))
+                }
+
+                posts[p.id - 1] = p.copy(reposts = Repost(count = countRepost, idPostOriginal = idPostOriginal, userReposted = userReposted), likes = Likes(count = sumLikes))
+//                posts[p.id - 1] = p.copy(reposts = Repost(count = countRepost))
+                val repostPost = p.copy(reposts = Repost(userReposted = true, idPostOriginal = p.id), likes = null)
+                add(repostPost)
+                return true
             }
         }
         return false

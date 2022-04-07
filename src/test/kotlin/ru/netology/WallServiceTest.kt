@@ -11,7 +11,7 @@ class WallServiceTest {
     fun add() {
         val service = WallService
 
-        val result = service.add(Post(id = 7, text = "Пост7"))
+        val result = service.add(Post(text = "Пост7"))
 
         assertEquals(result.id, 7)
     }
@@ -52,4 +52,37 @@ class WallServiceTest {
         // проверяем результат (используйте assertTrue или assertFalse)
         assertFalse(result)
     }
+
+    @Test
+    fun likePostIdTrue() {
+        val service = WallService
+
+        val result = service.likePostId(3)
+        assertTrue(result)
+    }
+
+    @Test
+    fun likePostIdFalse() {
+        val service = WallService
+
+        val result = service.likePostId(11)
+        assertFalse(result)
+    }
+
+    @Test
+    fun repostIdTrue() {
+        val service = WallService
+
+        val result = service.repostId(1)
+        assertTrue(result)
+    }
+
+    @Test
+    fun repostIdFalse() {
+        val service = WallService
+
+        val result = service.repostId(11)
+        assertFalse(result)
+    }
+
 }
