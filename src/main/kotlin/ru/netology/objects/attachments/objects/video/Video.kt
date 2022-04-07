@@ -6,4 +6,5 @@ data class Video(
     val title: String? = null,
     val description: String? = null,
     val duration: Int = 0,
+    val type: String? = null
 )

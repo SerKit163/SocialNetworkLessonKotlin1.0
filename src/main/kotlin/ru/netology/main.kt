@@ -2,6 +2,9 @@ package ru.netology
 
 import ru.netology.objects.Likes
 import ru.netology.objects.Repost
+import ru.netology.objects.attachments.Attachment
+import ru.netology.objects.attachments.objects.video.Video
+import ru.netology.objects.attachments.objects.video.VideoAttachment
 
 
 fun main() {
@@ -39,6 +42,12 @@ fun main() {
         println("FOR -> " + i)
     }
     println("----------------")
+
+
+    val attachmentVideo: Attachment = Attachment.VideoAttachment(Video(type = "stuff"))
+
+    println(attachmentVideo.type)
+
 }
 
 
