@@ -46,10 +46,10 @@ fun main() {
 //    val comment3 = Comment(postId = 20, text = "Комментарий #3 не существующего postId")
 
     WallService.createComment(comment1)
+    WallService.reportComment(1, 4)
     WallService.createComment(comment2)
 //    WallService.createComment(comment3)
 
-    WallService.reportComment(1, 4)
 
     println("-- Комментария --")
     for (i in WallService.comments) {
