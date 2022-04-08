@@ -2,6 +2,7 @@ package ru.netology
 
 import ru.netology.objects.*
 import ru.netology.objects.attachments.Attachments
+import ru.netology.objects.comments.Comment
 import ru.netology.objects.geo.Geo
 import java.time.LocalDateTime
 
@@ -15,7 +16,7 @@ data class Post(
     val replyOwnerId: Int = 0,
     val replyPostIf: Int = 0,
     val friendsOnly: Boolean = false,
-    val comments: Comment? = null,
+    val comments : Comment? = null,
     val copyright: Copyright? = null,
     val likes: Likes? = null,
     val reposts: Repost? = null,

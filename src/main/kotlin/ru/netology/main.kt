@@ -1,10 +1,11 @@
 package ru.netology
 
+import ru.netology.exceptions.CommentNotFoundException
+import ru.netology.exceptions.PostNotFoundException
+import ru.netology.exceptions.ReportCommentNotFoundException
 import ru.netology.objects.Likes
 import ru.netology.objects.Repost
-import ru.netology.objects.attachments.Attachment
-import ru.netology.objects.attachments.objects.video.Video
-import ru.netology.objects.attachments.objects.video.VideoAttachment
+import ru.netology.objects.comments.Comment
 
 
 fun main() {
@@ -37,26 +38,54 @@ fun main() {
     WallService.likePostId(1)
     WallService.likePostId(2)
 
-    println("----------------")
-    for (i in WallService.posts) {
-        println("FOR -> " + i)
+//    val attachmentVideo: Attachment = Attachment.VideoAttachment(Video(type = "stuff"))
+//    println(attachmentVideo.type)
+
+    val comment1 = Comment(postId = 2, text = "Комментарий #1 к посту #2")
+    val comment2 = Comment(postId = 5, text = "Комментарий #2 к посту #5")
+//    val comment3 = Comment(postId = 20, text = "Комментарий #3 не существующего postId")
+
+    WallService.createComment(comment1)
+    WallService.createComment(comment2)
+//    WallService.createComment(comment3)
+
+    WallService.reportComment(1, 4)
+
+    println("-- Комментария --")
+    for (i in WallService.comments) {
+        println("Comment -> $i")
     }
-    println("----------------")
+    println("-----------------")
 
-
-    val attachmentVideo: Attachment = Attachment.VideoAttachment(Video(type = "stuff"))
-
-    println(attachmentVideo.type)
+    println("----- Посты -----")
+    for (i in WallService.posts) {
+        println("FOR -> $i")
+    }
+    println("-----------------")
 
 }
 
-
 object WallService {
     var posts = emptyArray<Post>()
+    var comments = emptyArray<Comment>()
+
+    private val reasonReportComment = arrayOf(
+        "Спам",
+        "Детская порнография",
+        "Экстремизм",
+        "Насилие",
+        "Пропаганда наркотиков",
+        "Материал для взрослых",
+        "Оскорбление",
+        "Призывы к суициду"
+    )
+
     private var id: Int = 0
+    private var commentId: Int = 0
 
     fun add(post: Post): Post {
         id++
+//        posts += post.copy(id = if (post.id == 0) id else post.id)
         posts += post.copy(id = id)
 
         return posts.last()
@@ -88,14 +117,14 @@ object WallService {
                 val idPostOriginal = p.reposts?.idPostOriginal ?: 0
 
                 if (idPostOriginal > 0) {
-
                     val original = posts[idPostOriginal - 1].likes?.count ?: 0
-
                     val sumLikes = original + 1
 
                     posts[idPostOriginal - 1] = posts[idPostOriginal - 1].copy(likes = Likes(count = sumLikes))
                 }
+
                 posts[p.id - 1] = p.copy(likes = Likes(count = countLike, userLikes = true))
+
             return true
             }
         }
@@ -109,7 +138,6 @@ object WallService {
                 countRepost++
 
                 val originalLike = posts[id - 1].likes?.count ?: 0
-
                 val sumLikes = originalLike + 1
 
                 val idPostOriginal = p.reposts?.idPostOriginal ?: 0
@@ -122,12 +150,68 @@ object WallService {
                 }
 
                 posts[p.id - 1] = p.copy(reposts = Repost(count = countRepost, idPostOriginal = idPostOriginal, userReposted = userReposted), likes = Likes(count = sumLikes))
-//                posts[p.id - 1] = p.copy(reposts = Repost(count = countRepost))
+
                 val repostPost = p.copy(reposts = Repost(userReposted = true, idPostOriginal = p.id), likes = null)
                 add(repostPost)
                 return true
             }
         }
         return false
+    }
+
+    fun createComment(comment: Comment): Comment {
+        commentId++
+
+        posts.forEach { p ->
+            if (p.id == comment.postId) {
+
+                comments += comment.copy(id = commentId)
+
+                posts[p.id - 1] = p.copy(comments = Comment(id = commentId, postId = comment.postId, text = comment.text, reportComment = comment.reportComment))
+
+                return comments.last()
+            }
+        }
+
+        throw PostNotFoundException("Нет поста с id: ${comment.postId}")
+    }
+
+//    fun createComment(comment: Comment): Comment {
+//        commentId++
+//
+//        val post = findPostId(comment.postId)
+//
+//        val commentPost = post?.copy(comments = Comment())
+//            ?.comments?.copy(id = commentId, postId = comment.postId, text = comment.text)
+//            ?: throw PostNotFoundException("Нет поста с id: ${comment.postId}")
+//
+//        comments += commentPost
+//
+//        posts[comment.postId - 1] = post.copy(comments = commentPost)
+//
+//        return comments.last()
+//    }
+
+    fun findPostId(id: Int): Post? {
+        posts.forEach { post ->
+            if (post.id == id) {
+                return post
+            }
+        }
+        return null
+    }
+
+    fun reportComment(id: Int, reason: Int): Comment {
+        comments.forEach { c ->
+            if (c.id == id) {
+                if (reason < reasonReportComment.size) {
+                    comments[c.id - 1] = c.copy(reportComment = reasonReportComment[reason])
+                return comments.last()
+                }
+                throw ReportCommentNotFoundException("Нет жалобы с #: $reason")
+            }
+        }
+
+        throw CommentNotFoundException("Нет комментария с id: $id")
     }
 }
