@@ -164,10 +164,7 @@ object WallService {
 
         posts.forEach { p ->
             if (p.id == comment.postId) {
-
                 comments += comment.copy(id = commentId)
-
-                posts[p.id - 1] = p.copy(comments = Comment(id = commentId, postId = comment.postId, text = comment.text, reportComment = comment.reportComment))
 
                 return comments.last()
             }
